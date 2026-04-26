@@ -14,6 +14,8 @@ jobs:
   test:
     name: Test & Lint
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true   # ← Dòng này để tắt warning
 
     services:
       postgres:
@@ -34,7 +36,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -53,12 +55,14 @@ jobs:
         run: npm run init-db
 
       - name: Run tests
-        run: npm test || echo "✅ No tests configured yet (skip)"
+        run: npm test || echo "✅ No tests configured yet"
 
   build-and-push:
     name: Build & Push Docker Image
     needs: test
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
 
     steps:
